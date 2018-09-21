@@ -357,7 +357,7 @@ if __name__== "__main__":
         
         res = measure(time,flux,returnrange=True)
         
-        print(kic,res)
+        print((kic,res))
 
 
 
