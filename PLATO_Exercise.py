@@ -10,6 +10,8 @@ PLATO data.
 measure(time,flux) function returns measures of (numax,deltanu) from input 
 short-cadence time series relative flux measurements.
 
+Can return approximate frequency range of oscillations if returnrange = True
+
 Based on the coefficient of variation method of Bell, Hekker and Kuszlewicz
 (2018, MNRAS, submitted).
 
@@ -223,7 +225,7 @@ momentbins = 4 #Number of independent bins to calculate moments over
 minwidthorders = 4 #Minimum continuous oversampled CV > 1 in approx. radial orders
 
 
-def measure(time,flux):
+def measure(time,flux,returnrange = False):
     """Measure numax and deltanu from time series photometry.
     
     Input:
@@ -232,6 +234,10 @@ def measure(time,flux):
     
     Output:
         (numax,deltanu) tuple (in muHz)
+    if returnrange:
+        (numax,deltanu,lowfreq,highfreq),
+        where the latter are approximate limits of the oscillation range
+        
     """
     
     #Cleanup light curve
@@ -284,6 +290,7 @@ def measure(time,flux):
     
     numaxmeas = np.nan
     peakmoment = 0
+    acceptedrange = (np.nan, np.nan)
     
     for i in wideenough:
         lowfreq = obincenters[rangesabove1[i][0]]
@@ -294,6 +301,7 @@ def measure(time,flux):
             if moment0[localpeakmoment] > peakmoment:
                 peakmoment = moment0[localpeakmoment]
                 numaxmeas = 10.**moment1[localpeakmoment]
+                acceptedrange = (lowfreq,highfreq)
     
     #PSPS for deltanu
     deltanumeas = np.nan
@@ -324,7 +332,10 @@ def measure(time,flux):
         fftfreqs = fftfreqs[search]
         deltanumeas = 2./fftfreqs[np.argmax(fftps)]
 
-    return numaxmeas,deltanumeas
+    if returnrange:
+        return numaxmeas,deltanumeas,acceptedrange[0],acceptedrange[1]
+    else:
+        return numaxmeas,deltanumeas
 
 
 
@@ -337,21 +348,16 @@ if __name__== "__main__":
     else:
         lcfiles = glob('Data/*/*.dat')
     
-    kic = []
-    numax = []
-    deltanu = []
     for filenum,lcfile in enumerate(lcfiles):
-        kic.append(int(lcfile.split('kic')[1].split('_')[0]))
+        kic = int(lcfile.split('kic')[1].split('_')[0])
         
         lcdat = np.loadtxt(lcfile)
         time = lcdat[:,0]*24.*3600
         flux = 1.+lcdat[:,1]/1e6
         
-        res = measure(time,flux)
-        numax.append(res[0])
-        deltanu.append(res[1])
+        res = measure(time,flux,returnrange=True)
         
-        print kic[-1],numax[-1],deltanu[-1]
+        print(kic,res)
 
 
 
