@@ -4,7 +4,7 @@
 Created on Thu Sep 20 19:36:01 2018
 
 Keaton Bell's (Max Planck Institute for Solar System Research) code for the
-PSM WP128 Short Cadence (SC) Community Data Analysis Exercise to ptepare for 
+PSM WP128 Short Cadence (SC) Community Data Analysis Exercise to prepare for 
 PLATO data.
 
 measure(time,flux) function returns measures of (numax,deltanu) from input 
@@ -13,7 +13,7 @@ short-cadence time series relative flux measurements.
 Can return approximate frequency range of oscillations if returnrange = True
 
 Based on the coefficient of variation method of Bell, Hekker and Kuszlewicz
-(2018, MNRAS, submitted).
+(2019, MNRAS, 482, 616; http://adsabs.harvard.edu/abs/2019MNRAS.482..616B).
 
 @author: keatonb
 """
